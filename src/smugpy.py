@@ -23,7 +23,7 @@ def _authenticated(method):
 
 
 class SmugMug(object):
-    def __init__(self, api_key=None, oauth_secret=None, api_version="1.2.2", secure=False,
+    def __init__(self, api_key=None, oauth_secret=None, api_version="1.3.0", secure=False,
                  session_id=None, oauth_token=None, oauth_token_secret=None):
         """Initializes a session."""
         self.api_key = api_key
