@@ -37,7 +37,7 @@ Oauth request:
     raw_input("Authorize app at %s\n\nPress Enter when complete.\n" % (smugmug.authorize()))   
     smugmug.auth_getAccessToken()
 
-    albums = smugmug.albums_get(NickName="williams") # Moon River Photography, thanks Andy!
+    albums = smugmug.albums_get(NickName="williams")
     for album in albums["Albums"]:
         print "%s, %s" % (album["id"], album["Title"])
 
