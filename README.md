@@ -33,7 +33,6 @@ Oauth request:
 
     smugmug = SmugMug(api_key=API_KEY, oauth_secret=OAUTH_SECRET)
 
-    #Oauth handshake
     smugmug.auth_getRequestToken()
     raw_input("Authorize app at %s\n\nPress Enter when complete.\n" % (smugmug.authorize()))   
     smugmug.auth_getAccessToken()
