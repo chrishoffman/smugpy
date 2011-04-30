@@ -23,7 +23,7 @@ def _authenticated(method):
 
 
 class SmugMug(object):
-    def __init__(self, api_key=None, oauth_secret=None, api_version="1.3.0", secure=False,
+    def __init__(self, api_key=None, oauth_secret=None, api_version="1.2.2", secure=False,
                  session_id=None, oauth_token=None, oauth_token_secret=None):
         """Initializes a session."""
         self.api_key = api_key
@@ -35,7 +35,7 @@ class SmugMug(object):
         
         #Store version information
         self.api_version = dict()
-        (major, minor, rev) = api_version.split(".")
+        major, minor, rev = api_version.split(".")
         self.api_version["str"] = api_version
         self.api_version["major"] = int(major)
         self.api_version["minor"] = int(minor)
@@ -44,7 +44,9 @@ class SmugMug(object):
         if api_key is None: 
             raise SmugMugException, "API Key is Required"
         
-        if oauth_secret is not None and not ((minor == 2 and rev == 2) or minor > 2):
+        if oauth_secret is not None and not \
+            ((self.api_version["minor"] == 2 and self.api_version["rev"] == 2) \
+            or self.api_version["minor"] > 2):
             raise SmugMugException, "Oauth only supported in versions 1.2.2+"
 
     @_authenticated
@@ -111,7 +113,9 @@ class SmugMug(object):
 
     def _make_handler(self, method):
         secure = False
-        if method.startswith("login_with") or (method.startswith("auth") and self.api_version["minor"] > 2) or self.secure:
+        if method.startswith("login_with") or \
+            (method.startswith("auth") and self.api_version["minor"] > 2) or \
+            self.secure:
             secure = True
         
         method = "smugmug." + method.replace("_", ".")
@@ -138,7 +142,7 @@ class SmugMug(object):
             rsp = self._fetch_url(url)
             
             return self._handle_response(rsp)
-        
+            
         return api_request
 
     def _handle_response(self, response):
