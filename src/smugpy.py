@@ -188,28 +188,6 @@ class SmugMug(object):
         #TODO: Add useragent header
         return urllib2.urlopen(url).read()
 
-    def _set_cache(self, key, data):
-        """Not implemented"""
-        raise SmugMugException, "Not implemented"
-    
-    def _get_cache(self, url):
-        """Not implemented"""
-        raise SmugMugException, "Not implemented"
-
-class SmugMugAE(SmugMug):
-    def _fetch_url(self, url):
-        from google.appengine.api import urlfetch
-        #TODO: Add useragent header
-        return urlfetch.fetch(url).content
-    
-    def _set_cache(self, key, data):
-        from google.appengine.api import memcache
-        pass
-    
-    def _get_cache(self, url):
-        from google.appengine.api import memcache
-        pass
-
 def urlencodeRFC3986(val):
     if isinstance(val, unicode):
         val = val.encode("utf-8")
