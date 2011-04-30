@@ -28,17 +28,24 @@ class SmugMug(object):
         """Initializes a session."""
         self.api_key = api_key
         self.oauth_secret = oauth_secret
-        self.api_version = api_version
         self.secure = secure
         self.session_id = session_id
         self.oauth_token = oauth_token
         self.oauth_token_secret = oauth_token_secret
         
+        #Store version information
+        self.api_version = dict()
+        (major, minor, rev) = api_version.split(".")
+        self.api_version["str"] = api_version
+        self.api_version["major"] = int(major)
+        self.api_version["minor"] = int(minor)
+        self.api_version["rev"] = int(rev)
+        
         if api_key is None: 
             raise SmugMugException, "API Key is Required"
         
-        if oauth_secret is not None and api_version != "1.2.2":
-            raise SmugMugException, "Oauth only supported in version 1.2.2"
+        if oauth_secret is not None and not ((minor == 2 and rev == 2) or minor > 2):
+            raise SmugMugException, "Oauth only supported in versions 1.2.2+"
 
     @_authenticated
     def __getattr__(self, method, **args):
@@ -103,15 +110,19 @@ class SmugMug(object):
         return rsp
 
     def _make_handler(self, method):
-        if method.startswith("login_with") or self.secure:
-            proto = "https"
-        else:
-            proto = "http"
+        secure = False
+        if method.startswith("login_with") or (method.startswith("auth") and self.api_version["minor"] > 2) or self.secure:
+            secure = True
+        
         method = "smugmug." + method.replace("_", ".")
         
         def api_request(**kwargs):
             """Fetches the given API call"""
-            url = proto + "://api.smugmug.com/services/api/json/" + self.api_version + "/"
+            if secure:
+                url = "https://secure.smugmug.com/services/api/json/"
+            else:
+                url = "http://api.smugmug.com/services/api/json/"
+            url = url + self.api_version["str"] + "/"
             kwargs.update(dict(method=method))
             
             # Add the OAuth resource request signature if we have credentials
