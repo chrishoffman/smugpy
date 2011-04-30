@@ -12,6 +12,7 @@ Installing the python client is a very simple process. Once you've downloaded th
 Usage
 -----
 Anonymous request:
+
     from smugpy import SmugMug
 
     API_KEY = "XXXXXXXXXXXXXXXXXXXXXXXXX"
@@ -24,6 +25,7 @@ Anonymous request:
         print "%s, %s" % (album["id"], album["Title"])
 
 Oauth request:
+
     from smugpy import SmugMug
 
     API_KEY = "XXXXXXXXXXXXXXXXXXXXXXXXX"
