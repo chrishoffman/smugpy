@@ -5,13 +5,15 @@ import time
 import urllib
 import urlparse
 import uuid
-import functools
 
 try:
     import simplejson
 except ImportError:
+    import json as simplejson
+except ImportError:
     from django.utils import simplejson
 
+VERSION = "0.1"
 
 class SmugMug(object):
     def __init__(self, api_key=None, oauth_secret=None, api_version="1.2.2", secure=False,
@@ -23,22 +25,13 @@ class SmugMug(object):
         self.session_id = session_id
         self.oauth_token = oauth_token
         self.oauth_token_secret = oauth_token_secret
-        self.application = application + " (smugpy 0.1)"
-        
-        # Store version information
-        self.api_version = dict()
-        major, minor, rev = api_version.split(".")
-        self.api_version["str"] = api_version
-        self.api_version["major"] = int(major)
-        self.api_version["minor"] = int(minor)
-        self.api_version["rev"] = int(rev)
+        self.application = "%s (smugpy %s)" % (application, VERSION)
+        self.api_version = api_version
         
         if api_key is None: 
             raise SmugMugException, "API Key is Required"
         
-        if oauth_secret is not None \
-            and not ((self.api_version["minor"] == 2 and self.api_version["rev"] == 2) \
-                or self.api_version["minor"] > 2):
+        if oauth_secret is not None and not self.check_version(min="1.2.2"):
             raise SmugMugException, "Oauth only supported in versions 1.2.2+"
 
     def __getattr__(self, method, **args):
@@ -73,8 +66,9 @@ class SmugMug(object):
     def _login(self, handler, **kwargs):
         """General login method that stores returned session id"""
         # Beginning in 1.3.0, Oauth and anonymous are the only supported
-        # authentication methods
-        if self.api_version["minor"] < 3:
+        # authentication methods, no session is required for anonymous
+        # access
+        if not self.check_version(max="1.2.2"):
             raise SmugMugException, "Not a supported method"
         
         kwargs.update(dict(APIKey=self.api_key))
@@ -109,7 +103,7 @@ class SmugMug(object):
     def _make_handler(self, method):
         secure = False
         if method.startswith("login_with") or \
-            (method.startswith("auth") and self.api_version["minor"] > 2) or \
+            (method.startswith("auth") and self.check_version(min="1.3.0")) or \
             self.secure:
             secure = True
         
@@ -121,7 +115,7 @@ class SmugMug(object):
                 url = "https://secure.smugmug.com/services/api/json/"
             else:
                 url = "http://api.smugmug.com/services/api/json/"
-            url = url + self.api_version["str"] + "/"
+            url = url + self.api_version + "/"
             kwargs.update(dict(method=method))
             
             # Add the OAuth resource request signature if we have credentials
@@ -130,10 +124,10 @@ class SmugMug(object):
                 all_args.update(kwargs)
                 oauth = self._get_oauth_resource_request_parameters(url, all_args, method="GET")
                 kwargs.update(oauth)
-            elif self.session_id:
-                kwargs.update(dict(SessionID=self.session_id))
-            elif self.api_version["minor"] > 2:
+            elif self.check_version(min="1.3.0"): #Anonymous access
                 kwargs.update(dict(APIKey=self.api_key))
+            elif self.check_version(max="1.2.2") and self.session_id:
+                kwargs.update(dict(SessionID=self.session_id))
             
             if kwargs: url += "?" + urllib.urlencode(kwargs)
             rsp = self._fetch_url(url)
@@ -197,10 +191,28 @@ class SmugMug(object):
     
     def _fetch_url(self, url):
         import urllib2
-        header = {"User-Agent":self.application}
+        header = {"User-Agent": self.application}
         req = urllib2.Request(url, None, header)
         return urllib2.urlopen(req).read()
-
+    
+    def check_version(self, min=None, max=None):
+        """Checks API version
+        
+        This function validates the API version called
+        against the min and max version supported.
+        """
+        version = int(self.api_version.replace(".",""))
+        if min:
+            min_version = int(min.replace(".",""))
+            if version < min_version:
+                return False
+        if max:
+            max_version = int(max.replace(".",""))
+            if version > max_version:
+                return False
+            
+        return True
+        
 def urlencodeRFC3986(val):
     if isinstance(val, unicode):
         val = val.encode("utf-8")
