@@ -12,19 +12,10 @@ try:
 except ImportError:
     from django.utils import simplejson
 
-def _authenticated(method):
-    @functools.wraps(method)
-    def wrapper(self, *args, **kwargs):
-        if self.oauth_token is None and self.session_id is None:
-            raise SmugMugException, "Authentication required for this method"
-            
-        return method(self, *args, **kwargs)
-    return wrapper
-
 
 class SmugMug(object):
     def __init__(self, api_key=None, oauth_secret=None, api_version="1.2.2", secure=False,
-                 session_id=None, oauth_token=None, oauth_token_secret=None):
+                 session_id=None, oauth_token=None, oauth_token_secret=None, application="Unknown App"):
         """Initializes a session."""
         self.api_key = api_key
         self.oauth_secret = oauth_secret
@@ -32,8 +23,9 @@ class SmugMug(object):
         self.session_id = session_id
         self.oauth_token = oauth_token
         self.oauth_token_secret = oauth_token_secret
+        self.application = application + " (smugpy 0.1)"
         
-        #Store version information
+        # Store version information
         self.api_version = dict()
         major, minor, rev = api_version.split(".")
         self.api_version["str"] = api_version
@@ -44,12 +36,11 @@ class SmugMug(object):
         if api_key is None: 
             raise SmugMugException, "API Key is Required"
         
-        if oauth_secret is not None and not \
-            ((self.api_version["minor"] == 2 and self.api_version["rev"] == 2) \
-            or self.api_version["minor"] > 2):
+        if oauth_secret is not None \
+            and not ((self.api_version["minor"] == 2 and self.api_version["rev"] == 2) \
+                or self.api_version["minor"] > 2):
             raise SmugMugException, "Oauth only supported in versions 1.2.2+"
 
-    @_authenticated
     def __getattr__(self, method, **args):
         """Construct a dynamic handler for the SmugMug API.
 
@@ -78,9 +69,14 @@ class SmugMug(object):
         ping = self._make_handler("service_ping")
         return ping(**kwargs)
 
-    #Login methods
+    # Login methods (1.2.2 and lower)
     def _login(self, handler, **kwargs):
         """General login method that stores returned session id"""
+        # Beginning in 1.3.0, Oauth and anonymous are the only supported
+        # authentication methods
+        if self.api_version["minor"] < 3:
+            raise SmugMugException, "Not a supported method"
+        
         kwargs.update(dict(APIKey=self.api_key))
         login = self._make_handler(handler)
         rsp = login(**kwargs)
@@ -103,7 +99,6 @@ class SmugMug(object):
             rsp["Auth"]["Token"]["Secret"])
         return rsp
 
-    @_authenticated
     def auth_getAccessToken(self, **kwargs):
         auth = self._make_handler("auth_getAccessToken")
         rsp = auth(**kwargs)
@@ -137,6 +132,8 @@ class SmugMug(object):
                 kwargs.update(oauth)
             elif self.session_id:
                 kwargs.update(dict(SessionID=self.session_id))
+            elif self.api_version["minor"] > 2:
+                kwargs.update(dict(APIKey=self.api_key))
             
             if kwargs: url += "?" + urllib.urlencode(kwargs)
             rsp = self._fetch_url(url)
@@ -200,8 +197,9 @@ class SmugMug(object):
     
     def _fetch_url(self, url):
         import urllib2
-        #TODO: Add useragent header
-        return urllib2.urlopen(url).read()
+        header = {"User-Agent":self.application}
+        req = urllib2.Request(url, None, header)
+        return urllib2.urlopen(req).read()
 
 def urlencodeRFC3986(val):
     if isinstance(val, unicode):
