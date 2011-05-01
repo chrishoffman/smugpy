@@ -26,6 +26,7 @@ setup(
     given to you by SmugMug before you can make API requests. See 
     http://wiki.smugmug.net/display/API/ for more information.
 
-     LICENSE The SmugMug Python Helper Library is distributed under the MIT
-    License """
+    LICENSE 
+    The SmugMug Python Helper Library is distributed under the MIT License 
+    """
 )
