@@ -99,7 +99,41 @@ class SmugMug(object):
         self.set_oauth_token(rsp["Auth"]["Token"]["id"],
             rsp["Auth"]["Token"]["Secret"])
         return rsp
+    
+    def images_upload(self, **kwargs):
+        if not kwargs.has_key("File") or not kwargs.has_key("AlbumID"):
+            raise SmugMugException, "File and AlbumID are required"
+        
+        if not kwargs.has_key("FileName"):
+            kwargs["FileName"] = os.path.basename(kwargs["File"])
+        
+        # Upload Url
+        url = "http://upload.smugmug.com/%s" % kwargs["FileName"]
 
+        # Read file in binary mode
+        f = open(kwargs["File"], "rb")
+        data = f.read()
+        f.close()
+        
+        header = {}
+        header["Content-MD5"] = hashlib.md5(data).hexdigest()
+        header["Content-Length"] = os.path.getsize(kwargs["File"])
+        header["X-Smug-Version"] = self.api_version
+        header["X-Smug-ResponseType"] = "JSON"
+        
+        if self.oauth_token:
+            oauth_params = self._get_oauth_resource_request_parameters(url, {}, "PUT")
+            header["Authorization"] = 'OAuth realm="http://api.smugmug.com/", ' + \
+                ", ".join('%s="%s"' % (k, urlencodeRFC3986(v)) for k, v in sorted(oauth_params.items()))
+        
+        # Other headers
+        for k, v in kwargs.items():
+            if k == "File": continue
+            header["X-Smug-"+k] = v
+        
+        rsp = self._fetch_url(url, data, header, "PUT")
+        return self._handle_response(rsp)
+    
     def _make_handler(self, method):
         secure = False
         if method.startswith("login_with") or \
@@ -189,10 +223,11 @@ class SmugMug(object):
         hash = hmac.new(key, base_string, hashlib.sha1)
         return binascii.b2a_base64(hash.digest())[:-1]
     
-    def _fetch_url(self, url):
-        import urllib2
-        header = {"User-Agent": self.application}
-        req = urllib2.Request(url, None, header)
+    def _fetch_url(self, url, body, header={}, method="POST"):
+        header.update({"User-Agent": self.application})
+        req = urllib2.Request(url, body, header)
+        if method == "PUT":
+            req.get_method = lambda: 'PUT'
         return urllib2.urlopen(req).read()
     
     def check_version(self, min=None, max=None):
