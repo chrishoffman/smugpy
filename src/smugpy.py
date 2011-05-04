@@ -163,8 +163,7 @@ class SmugMug(object):
             elif self.check_version(max="1.2.2") and self.session_id:
                 kwargs.update(dict(SessionID=self.session_id))
             
-            if kwargs: url += "?" + urllib.urlencode(kwargs)
-            rsp = self._fetch_url(url)
+            rsp = self._fetch_url(url, urllib.urlencode(kwargs))
             
             return self._handle_response(rsp)
             
