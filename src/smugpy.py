@@ -156,7 +156,7 @@ class SmugMug(object):
             if self.oauth_secret:
                 all_args={}
                 all_args.update(kwargs)
-                oauth = self._get_oauth_resource_request_parameters(url, all_args, method="GET")
+                oauth = self._get_oauth_resource_request_parameters(url, all_args, method="POST")
                 kwargs.update(oauth)
             elif self.check_version(min="1.3.0"): #Anonymous access
                 kwargs.update(dict(APIKey=self.api_key))
