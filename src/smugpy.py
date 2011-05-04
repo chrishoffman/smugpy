@@ -1,23 +1,29 @@
-﻿import binascii
+﻿#!/usr/bin/env python 
+# -*- coding: utf-8 -*- 
+
+import binascii
 import hashlib
 import hmac
 import time
 import urllib
+import urllib2
 import urlparse
 import uuid
+import os
 
+# Find a JSON library
 try:
-    import simplejson
+    import simplejson as json
 except ImportError:
-    import json as simplejson
+    import json
 except ImportError:
-    from django.utils import simplejson
+    from django.utils import simplejson as json
 
-VERSION = "0.1"
+__version__ = "0.1"
 
 class SmugMug(object):
     def __init__(self, api_key=None, oauth_secret=None, api_version="1.2.2", secure=False,
-                 session_id=None, oauth_token=None, oauth_token_secret=None, application="Unknown App"):
+                 session_id=None, oauth_token=None, oauth_token_secret=None, app_name=None):
         """Initializes a session."""
         self.api_key = api_key
         self.oauth_secret = oauth_secret
@@ -25,14 +31,18 @@ class SmugMug(object):
         self.session_id = session_id
         self.oauth_token = oauth_token
         self.oauth_token_secret = oauth_token_secret
-        self.application = "%s (smugpy %s)" % (application, VERSION)
         self.api_version = api_version
         
         if api_key is None: 
             raise SmugMugException, "API Key is Required"
         
+        if app_name is None:
+            raise SmugMugException, "Application name is required"
+        else:
+            self.application = "%s (smugpy/%s)" % (app_name, __version__)
+        
         if oauth_secret is not None and not self.check_version(min="1.2.2"):
-            raise SmugMugException, "Oauth only supported in versions 1.2.2+"
+            raise SmugMugException, "Oauth only supported in API versions 1.2.2+"
 
     def __getattr__(self, method, **args):
         """Construct a dynamic handler for the SmugMug API.
@@ -66,7 +76,7 @@ class SmugMug(object):
     def _login(self, handler, **kwargs):
         """General login method that stores returned session id"""
         # Beginning in 1.3.0, Oauth and anonymous are the only supported
-        # authentication methods, no session is required for anonymous
+        # authentication methods and no session is required for anonymous
         # access
         if not self.check_version(max="1.2.2"):
             raise SmugMugException, "Not a supported method"
@@ -102,9 +112,9 @@ class SmugMug(object):
 
     def _make_handler(self, method):
         secure = False
-        if method.startswith("login_with") or \
-            (method.startswith("auth") and self.check_version(min="1.3.0")) or \
-            self.secure:
+        if (method.startswith("login_with") or 
+            (method.startswith("auth") and self.check_version(min="1.3.0")) or 
+            self.secure):
             secure = True
         
         method = "smugmug." + method.replace("_", ".")
@@ -137,12 +147,12 @@ class SmugMug(object):
         return api_request
 
     def _handle_response(self, response):
-        parsed = simplejson.loads(response.decode("UTF-8"))
+        parsed = json.loads(response.decode("UTF-8"))
         #TODO: Add better error handling
         if parsed["stat"] == "fail":
             raise SmugMugException, "SmugMug API Error for method " + parsed["method"] + \
                 ": (" + str(parsed["code"]) + ") " + parsed["message"]
-
+        
         return parsed
     
     #Oauth methods
@@ -210,9 +220,10 @@ class SmugMug(object):
             max_version = int(max.replace(".",""))
             if version > max_version:
                 return False
-            
-        return True
         
+        return True
+    
+    
 def urlencodeRFC3986(val):
     if isinstance(val, unicode):
         val = val.encode("utf-8")
