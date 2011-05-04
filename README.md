@@ -13,51 +13,51 @@ Usage
 -----
 Anonymous request:
 
-    ```python
-    from smugpy import SmugMug
+```python
+from smugpy import SmugMug
 
-    API_KEY = "XXXXXXXXXXXXXXXXXXXXXXXXX"
+API_KEY = "XXXXXXXXXXXXXXXXXXXXXXXXX"
 
-    smugmug = SmugMug(api_key=API_KEY, app_name="TestApp")
-    smugmug.login_anonymously()
-    albums = smugmug.albums_get(NickName="williams")
+smugmug = SmugMug(api_key=API_KEY, app_name="TestApp")
+smugmug.login_anonymously()
+albums = smugmug.albums_get(NickName="williams")
 
-    for album in albums["Albums"]:
-        print "%s, %s" % (album["id"], album["Title"])
-    ```
+for album in albums["Albums"]:
+    print "%s, %s" % (album["id"], album["Title"])
+```
 
 Anonymous request (1.3.0+):
 
-    ```python
-    from smugpy import SmugMug
+```python
+from smugpy import SmugMug
 
-    API_KEY = "XXXXXXXXXXXXXXXXXXXXXXXXX"
+API_KEY = "XXXXXXXXXXXXXXXXXXXXXXXXX"
 
-    smugmug = SmugMug(api_key=API_KEY, api_version="1.3.0", app_name="TestApp")
-    albums = smugmug.albums_get(NickName="williams")
+smugmug = SmugMug(api_key=API_KEY, api_version="1.3.0", app_name="TestApp")
+albums = smugmug.albums_get(NickName="williams")
 
-    for album in albums["Albums"]:
-        print "%s, %s" % (album["id"], album["Title"])
-    ```
+for album in albums["Albums"]:
+    print "%s, %s" % (album["id"], album["Title"])
+```
 
 Oauth request:
 
-    ```python
-    from smugpy import SmugMug
+```python
+from smugpy import SmugMug
 
-    API_KEY = "XXXXXXXXXXXXXXXXXXXXXXXXX"
-    OAUTH_SECRET = "YYYYYYYYYYYYYYYYYYYYYYY"
+API_KEY = "XXXXXXXXXXXXXXXXXXXXXXXXX"
+OAUTH_SECRET = "YYYYYYYYYYYYYYYYYYYYYYY"
 
-    smugmug = SmugMug(api_key=API_KEY, oauth_secret=OAUTH_SECRET, app_name="TestApp")
+smugmug = SmugMug(api_key=API_KEY, oauth_secret=OAUTH_SECRET, app_name="TestApp")
 
-    smugmug.auth_getRequestToken()
-    raw_input("Authorize app at %s\n\nPress Enter when complete.\n" % (smugmug.authorize()))   
-    smugmug.auth_getAccessToken()
+smugmug.auth_getRequestToken()
+raw_input("Authorize app at %s\n\nPress Enter when complete.\n" % (smugmug.authorize()))   
+smugmug.auth_getAccessToken()
 
-    albums = smugmug.albums_get(NickName="williams")
-    for album in albums["Albums"]:
-        print "%s, %s" % (album["id"], album["Title"])
-    ```
+albums = smugmug.albums_get(NickName="williams")
+for album in albums["Albums"]:
+    print "%s, %s" % (album["id"], album["Title"])
+```
 
 Helping Out
 -----------
