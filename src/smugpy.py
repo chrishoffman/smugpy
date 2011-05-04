@@ -19,7 +19,7 @@ except ImportError:
 except ImportError:
     from django.utils import simplejson as json
 
-__version__ = "0.1"
+__version__ = "0.2"
 
 class SmugMug(object):
     def __init__(self, api_key=None, oauth_secret=None, api_version="1.2.2", secure=False,

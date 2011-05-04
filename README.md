@@ -13,6 +13,7 @@ Usage
 -----
 Anonymous request:
 
+    ```python
     from smugpy import SmugMug
 
     API_KEY = "XXXXXXXXXXXXXXXXXXXXXXXXX"
@@ -23,9 +24,11 @@ Anonymous request:
 
     for album in albums["Albums"]:
         print "%s, %s" % (album["id"], album["Title"])
+    ```
 
 Anonymous request (1.3.0+):
 
+    ```python
     from smugpy import SmugMug
 
     API_KEY = "XXXXXXXXXXXXXXXXXXXXXXXXX"
@@ -35,9 +38,11 @@ Anonymous request (1.3.0+):
 
     for album in albums["Albums"]:
         print "%s, %s" % (album["id"], album["Title"])
+    ```
 
 Oauth request:
 
+    ```python
     from smugpy import SmugMug
 
     API_KEY = "XXXXXXXXXXXXXXXXXXXXXXXXX"
@@ -52,7 +57,7 @@ Oauth request:
     albums = smugmug.albums_get(NickName="williams")
     for album in albums["Albums"]:
         print "%s, %s" % (album["id"], album["Title"])
-
+    ```
 
 Helping Out
 -----------
