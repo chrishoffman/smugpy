@@ -54,10 +54,6 @@ Oauth request:
         print "%s, %s" % (album["id"], album["Title"])
 
 
-Known Issues
-------------
-* Smugpy does not support uploads
-
 Helping Out
 -----------
 If you notice any problems, please report them to the GitHub issue tracker at [http://github.com/chrishoffman/smugpy/issues](http://github.com/chrishoffman/smugpy/issues). 
