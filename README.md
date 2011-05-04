@@ -17,7 +17,7 @@ Anonymous request:
 
     API_KEY = "XXXXXXXXXXXXXXXXXXXXXXXXX"
 
-    smugmug = SmugMug(api_key=API_KEY, application="TestApp")
+    smugmug = SmugMug(api_key=API_KEY, app_name="TestApp")
     smugmug.login_anonymously()
     albums = smugmug.albums_get(NickName="williams")
 
@@ -30,7 +30,7 @@ Anonymous request (1.3.0+):
 
     API_KEY = "XXXXXXXXXXXXXXXXXXXXXXXXX"
 
-    smugmug = SmugMug(api_key=API_KEY, api_version="1.3.0", application="TestApp")
+    smugmug = SmugMug(api_key=API_KEY, api_version="1.3.0", app_name="TestApp")
     albums = smugmug.albums_get(NickName="williams")
 
     for album in albums["Albums"]:
@@ -43,7 +43,7 @@ Oauth request:
     API_KEY = "XXXXXXXXXXXXXXXXXXXXXXXXX"
     OAUTH_SECRET = "YYYYYYYYYYYYYYYYYYYYYYY"
 
-    smugmug = SmugMug(api_key=API_KEY, oauth_secret=OAUTH_SECRET, application="TestApp")
+    smugmug = SmugMug(api_key=API_KEY, oauth_secret=OAUTH_SECRET, app_name="TestApp")
 
     smugmug.auth_getRequestToken()
     raw_input("Authorize app at %s\n\nPress Enter when complete.\n" % (smugmug.authorize()))   
