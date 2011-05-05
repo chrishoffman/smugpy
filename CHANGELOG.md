@@ -1,7 +1,6 @@
 0.2
 ---
 * Adding support for uploads
-* Making app_name a mandatory parameter
 * Adding core json support
 
 0.1 

@@ -23,7 +23,7 @@ __version__ = "0.2"
 
 class SmugMug(object):
     def __init__(self, api_key=None, oauth_secret=None, api_version="1.2.2", secure=False,
-                 session_id=None, oauth_token=None, oauth_token_secret=None, app_name=None):
+                 session_id=None, oauth_token=None, oauth_token_secret=None, app_name="Unknown App"):
         """Initializes a session."""
         self.api_key = api_key
         self.oauth_secret = oauth_secret
@@ -31,15 +31,12 @@ class SmugMug(object):
         self.session_id = session_id
         self.oauth_token = oauth_token
         self.oauth_token_secret = oauth_token_secret
+        self.application = "%s (smugpy/%s)" % (app_name, __version__)
         self.api_version = api_version
         
         if api_key is None: 
             raise SmugMugException, "API Key is Required"
         
-        if app_name is None:
-            raise SmugMugException, "Application name is required"
-        else:
-            self.application = "%s (smugpy/%s)" % (app_name, __version__)
         
         if oauth_secret is not None and not self.check_version(min="1.2.2"):
             raise SmugMugException, "Oauth only supported in API versions 1.2.2+"
@@ -68,6 +65,7 @@ class SmugMug(object):
         self.session_id = session_id
 
     def service_ping(self):
+        """Ping service to check the current API status"""
         kwargs = dict(APIKey=self.api_key)
         ping = self._make_handler("service_ping")
         return ping(**kwargs)
@@ -97,6 +95,7 @@ class SmugMug(object):
         return self._login("login_withPassword", **kwargs)
 
     def auth_getRequestToken(self, **kwargs):
+        """Obtain an Oauth request token"""
         auth = self._make_handler("auth_getRequestToken")
         rsp = auth(**kwargs)
         self.set_oauth_token(rsp["Auth"]["Token"]["id"],
@@ -104,6 +103,7 @@ class SmugMug(object):
         return rsp
 
     def auth_getAccessToken(self, **kwargs):
+        """Obtain an Oauth access token"""
         auth = self._make_handler("auth_getAccessToken")
         rsp = auth(**kwargs)
         self.set_oauth_token(rsp["Auth"]["Token"]["id"],
@@ -111,6 +111,12 @@ class SmugMug(object):
         return rsp
     
     def images_upload(self, **kwargs):
+        """Upload an image
+        
+        Provide a file and album id to upload to a given album.  Using PUT
+        method as described in the API Documentation.
+        http://wiki.smugmug.net/display/API/Uploading
+        """
         if not kwargs.has_key("File") or not kwargs.has_key("AlbumID"):
             raise SmugMugException, "File and AlbumID are required"
         
@@ -145,6 +151,7 @@ class SmugMug(object):
         return self._handle_response(rsp)
     
     def _make_handler(self, method):
+        """API method contructor"""
         secure = False
         if (method.startswith("login_with") or 
             (method.startswith("auth") and self.check_version(min="1.3.0")) or 
@@ -180,6 +187,7 @@ class SmugMug(object):
         return api_request
 
     def _handle_response(self, response):
+        """API response handler that parse JSON response"""
         parsed = json.loads(response.decode("UTF-8"))
         #TODO: Add better error handling
         if parsed["stat"] == "fail":
@@ -236,7 +244,7 @@ class SmugMug(object):
         header.update({"User-Agent": self.application})
         req = urllib2.Request(url, body, header)
         if method == "PUT":
-            req.get_method = lambda: 'PUT'
+            req.get_method = lambda: "PUT"
         return urllib2.urlopen(req).read()
     
     def check_version(self, min=None, max=None):
@@ -259,6 +267,7 @@ class SmugMug(object):
     
     
 def urlencodeRFC3986(val):
+    """URL encoder required by Oauth"""
     if isinstance(val, unicode):
         val = val.encode("utf-8")
     return urllib.quote(val, safe="~")
