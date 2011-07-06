@@ -19,7 +19,7 @@ except ImportError:
 except ImportError:
     from django.utils import simplejson as json
 
-__version__ = "0.2.1"
+__version__ = "0.2"
 
 class SmugMug(object):
     def __init__(self, api_key=None, oauth_secret=None, api_version="1.2.2", secure=False,
@@ -36,6 +36,7 @@ class SmugMug(object):
         
         if api_key is None: 
             raise SmugMugException, "API Key is Required"
+        
         
         if oauth_secret is not None and not self.check_version(min="1.2.2"):
             raise SmugMugException, "Oauth only supported in API versions 1.2.2+"
@@ -140,8 +141,6 @@ class SmugMug(object):
             oauth_params = self._get_oauth_resource_request_parameters(url, {}, "PUT")
             header["Authorization"] = 'OAuth realm="http://api.smugmug.com/", ' + \
                 ", ".join('%s="%s"' % (k, urlencodeRFC3986(v)) for k, v in sorted(oauth_params.items()))
-        else:
-            header["X-Smug-SessionID"] = self.session_id
         
         # Other headers
         for k, v in kwargs.items():
@@ -190,16 +189,9 @@ class SmugMug(object):
     def _handle_response(self, response):
         """API response handler that parse JSON response"""
         parsed = json.loads(response.decode("UTF-8"))
-        
-        #API response for image upload method does not return method name
-        try:
-            method = parsed["method"]
-        except:
-            method = "smugmug.images.upload"
-        
         #TODO: Add better error handling
         if parsed["stat"] == "fail":
-            raise SmugMugException, "SmugMug API Error for method " + method + \
+            raise SmugMugException, "SmugMug API Error for method " + parsed["method"] + \
                 ": (" + str(parsed["code"]) + ") " + parsed["message"]
         
         return parsed
