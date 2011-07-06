@@ -4,7 +4,7 @@ from distutils.core import setup
 
 setup(
     name = "smugpy",
-    version = "0.2",
+    version = "0.2.1",
     description = "SmugMug Python API",
     author = "Chris Hoffman",
     author_email = "chris@chrishoffman.org",
