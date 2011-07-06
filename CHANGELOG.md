@@ -1,3 +1,7 @@
+0.2.1
+---
+* Fixing session issue with uploads. Fix for "issue #1":https://github.com/chrishoffman/smugpy/issues/1.
+
 0.2
 ---
 * Adding support for uploads
