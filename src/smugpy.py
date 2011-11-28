@@ -40,6 +40,18 @@ class SmugMug(object):
         if oauth_secret is not None and not self.check_version(min="1.2.2"):
             raise SmugMugException, "Oauth only supported in API versions 1.2.2+"
 
+    def __getstate__(self):
+      """Provide getstate for pickling the object.
+
+      Without __getstate__ pickle will try to use __getattr__ which has
+      side-effects unexpected by pickle
+      """
+      return self.__dict__
+
+    def __setstate__(self, state):
+      """Provide setstate for unpickling"""
+      self.__dict__.update(state)
+
     def __getattr__(self, method, **args):
         """Construct a dynamic handler for the SmugMug API.
 
