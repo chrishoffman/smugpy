@@ -135,7 +135,7 @@ class SmugMug(object):
             kwargs["FileName"] = os.path.basename(kwargs["File"])
         
         # Upload Url
-        url = "http://upload.smugmug.com/%s" % kwargs["FileName"]
+        url = "http://upload.smugmug.com/%s" % urllib.quote(kwargs["FileName"])
 
         # Read file in binary mode
         f = open(kwargs["File"], "rb")
