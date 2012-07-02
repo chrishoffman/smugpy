@@ -281,13 +281,13 @@ class SmugMug(object):
         This function validates the API version called
         against the min and max version supported.
         """
-        version = int(self.api_version.replace(".",""))
+        version = self.api_version.split(".")
         if min:
-            min_version = int(min.replace(".",""))
+            min_version = min.split(".")
             if version < min_version:
                 return False
         if max:
-            max_version = int(max.replace(".",""))
+            max_version = max.split(".")
             if version > max_version:
                 return False
         
