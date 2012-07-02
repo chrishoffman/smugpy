@@ -6,5 +6,6 @@ python:
   - 3.1
   - 3.2
 install: 
-  - pip install -r requirements.txt --use-mirrors
-script: python setup.py test
+  - if [[ $TRAVIS_PYTHON_VERSION == '2.5' ]]; then pip install --use-mirrors simplejson; fi
+  - pip install pytest --use-mirrors
+script: py.test tests
