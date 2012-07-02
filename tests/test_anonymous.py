@@ -5,7 +5,11 @@ import smugpy
 import sys
 import unittest
 import collections
-from StringIO import StringIO
+
+try: 
+    from StringIO import StringIO
+except:
+    from io import StringIO
 
 API_KEY = "XXXXXXXXXXXXXXXXXXXXXXXXX"
 
@@ -14,7 +18,10 @@ def makehash():
 
 def dummy_urlopen(req):
     url = req.get_full_url()
-    params = req.get_data()
+    if sys.version_info < (3,):
+        params = req.get_data()
+    else:
+        params = str( req.get_data(), encoding='utf8' )
 
     data = makehash()
     data['stat'] = 'ok'

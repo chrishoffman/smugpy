@@ -1,14 +1,12 @@
-﻿#!/usr/bin/env python
-
-from setuptools import setup, find_packages
-from textwrap import dedent
+import distutils.core
 import sys
+from textwrap import dedent
 
 install_requires = []
 if sys.version_info < (2, 6):
     install_requires.append("simplejson")
 
-setup(
+distutils.core.setup(
     name = "smugpy",
     version = "0.3.0-pre",
     description = "SmugMug Python API",
@@ -17,7 +15,7 @@ setup(
     license = "MIT",
     url = "http://github.com/chrishoffman/smugpy/",
     platforms = ["any"],
-    packages = find_packages(exclude=("tests",)),
+    packages = ["smugpy"],
     install_requires = install_requires,
     long_description = dedent("""\
     Python SmugMug Helper Library
