@@ -1,4 +1,4 @@
-Smugpy
+Smugpy [![Build Status](https://secure.travis-ci.org/chrishoffman/smugpy.png?branch=master)](http://travis-ci.org/chrishoffman/smugpy)
 ======
 
 Smugpy is an Python library for the [SmugMug](https://secure.smugmug.com/signup.mg?Coupon=2TqKwSOXw5HeU) API created by Chris Hoffman.  Smugpy supports all versions of the API and Oauth 1.0 for API versions 1.2.2+.  This library also works in [Google App Engine](http://code.google.com/appengine/).  For more information on the SmugMug API, see [SmugMug API Documentation](http://wiki.smugmug.net/display/API/).

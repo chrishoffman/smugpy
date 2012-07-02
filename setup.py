@@ -1,18 +1,26 @@
 ﻿#!/usr/bin/env python
 
-from distutils.core import setup
+from setuptools import setup, find_packages
+from textwrap import dedent
+import sys
+
+install_requires = []
+if sys.version_info < (2, 6):
+    install_requires.append("simplejson")
 
 setup(
     name = "smugpy",
-    version = "0.2.1",
+    version = "0.3.0-pre",
     description = "SmugMug Python API",
     author = "Chris Hoffman",
     author_email = "chris@chrishoffman.org",
+    license = "MIT",
     url = "http://github.com/chrishoffman/smugpy/",
-    package_dir = {"": "src"},
-    py_modules = ["smugpy"],
-    keywords = ["smugmug"],
-    long_description = """\
+    platforms = ["any"],
+    packages = find_packages(exclude=("tests",)),
+    install_requires = install_requires,
+    test_suite = "tests.get_tests",
+    long_description = dedent("""\
     Python SmugMug Helper Library
     ----------------------------
 
@@ -28,5 +36,5 @@ setup(
 
     LICENSE 
     The SmugMug Python Helper Library is distributed under the MIT License 
-    """
+    """)
 )

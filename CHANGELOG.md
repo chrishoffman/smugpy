@@ -1,3 +1,8 @@
+0.3.0
+---
+* Support for Python 3.0+
+* Unit Tests!
+
 0.2.1
 ---
 * Fixing session not set with image uploads. Fix for [issue #1](https://github.com/chrishoffman/smugpy/issues/1).
