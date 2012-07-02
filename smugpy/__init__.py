@@ -7,6 +7,7 @@ import hmac
 import time
 import uuid
 import os
+import sys
 
 try:
     import urllib.request as urlrequest
@@ -208,7 +209,10 @@ class SmugMug(object):
 
     def _handle_response(self, response):
         """API response handler that parse JSON response"""
-        parsed = json.loads(response.decode("UTF-8"))
+        if sys.version_info < (3,):
+            parsed = json.loads(response.decode("UTF-8"))
+        else:
+            parsed = json.loads(response)
         
         #API response for image upload method does not return method name
         try:
