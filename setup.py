@@ -19,7 +19,6 @@ setup(
     platforms = ["any"],
     packages = find_packages(exclude=("tests",)),
     install_requires = install_requires,
-    test_suite = "tests.get_tests",
     long_description = dedent("""\
     Python SmugMug Helper Library
     ----------------------------
