@@ -7,25 +7,9 @@ import hmac
 import time
 import uuid
 import os
-import sys
 
-try:
-    import urllib.request as urlrequest
-    from urllib.request import urlopen
-    from urllib.parse import urlparse, quote, urlencode
-except ImportError:
-    import urllib2 as urlrequest
-    from urllib2 import urlopen
-    from urlparse import urlparse
-    from urllib import quote, urlencode
-
-# Find a JSON library
-try:
-    import simplejson as json
-except ImportError:
-    import json
-except ImportError:
-    from django.utils import simplejson as json
+from .portability import urlencode, urlparse, urlrequest, urlopen, quote, \
+    json, compat_decode, compat_encode
 
 __version__ = "0.3.0-pre"
 
@@ -209,10 +193,7 @@ class SmugMug(object):
 
     def _handle_response(self, response):
         """API response handler that parse JSON response"""
-        if sys.version_info < (3,):
-            parsed = json.loads(response.decode("UTF-8"))
-        else:
-            parsed = json.loads(response)
+        parsed = json.loads(compat_decode(response))
         
         #API response for image upload method does not return method name
         try:
@@ -268,7 +249,7 @@ class SmugMug(object):
         key_elems.append(self.oauth_token_secret if self.oauth_token_secret else "")
         key = "&".join(key_elems)
         
-        hash = hmac.new(key, base_string, hashlib.sha1)
+        hash = hmac.new(key.encode("utf-8"), base_string.encode("utf-8"), hashlib.sha1)
         return binascii.b2a_base64(hash.digest())[:-1]
     
     def _fetch_url(self, url, body, header={}, method="POST"):
@@ -300,9 +281,7 @@ class SmugMug(object):
     
 def urlencodeRFC3986(val):
     """URL encoder required by Oauth"""
-    if isinstance(val, unicode):
-        val = val.encode("utf-8")
-    return quote(val, safe="~")
+    return quote(compat_encode(val), safe="~")
     
     
 class SmugMugException(Exception):
