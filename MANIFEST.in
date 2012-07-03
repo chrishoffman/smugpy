@@ -1,0 +1,7 @@
+include LICENSE
+include README.md
+include CHANGELOG.md
+recursive-include tests *
+recursive-exclude tests *.pyc *.pyo
+recursive-include examples *
+recursive-exclude examples *.pyc *.pyo
