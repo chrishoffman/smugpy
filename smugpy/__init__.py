@@ -11,7 +11,7 @@ import os
 from .portability import urlencode, urlparse, urlrequest, urlopen, quote, \
     json, compat_decode, compat_encode
 
-__version__ = "0.3.0-pre"
+__version__ = "0.3.0"
 
 class SmugMug(object):
     def __init__(self, api_key=None, oauth_secret=None, api_version="1.3.0", secure=False,
@@ -32,7 +32,7 @@ class SmugMug(object):
         if oauth_secret is not None and not self.check_version(min="1.2.2"):
             raise SmugMugException("Oauth only supported in API versions 1.2.2+")
 
-    def __getstate__(self):
+    def __getstate__(self): #pragma: no cover
         """Provide getstate for pickling the object.
 
         Without __getstate__ pickle will try to use __getattr__ which has
@@ -40,7 +40,7 @@ class SmugMug(object):
         """
         return self.__dict__
 
-    def __setstate__(self, state):
+    def __setstate__(self, state): #pragma: no cover
         """Provide setstate for unpickling"""
         self.__dict__.update(state)
 
@@ -58,10 +58,11 @@ class SmugMug(object):
         self.oauth_token = token
         self.oauth_token_secret = secret
 
-    def reset_oauth_token(self):
-        """Resets the OAuth access token"""
+    def reset_auth(self):
+        """Resets the authorization"""
         self.oauth_token = None
         self.oauth_token_secret = None
+        self.session_id = None
 
     def set_session(self, session_id):
         """Sets the id for this session."""
@@ -120,10 +121,10 @@ class SmugMug(object):
         method as described in the API Documentation.
         http://wiki.smugmug.net/display/API/Uploading
         """
-        if not kwargs.has_key("File") or not kwargs.has_key("AlbumID"):
+        if "File" not in kwargs or "AlbumID" not in kwargs:
             raise SmugMugException("File and AlbumID are required")
         
-        if not kwargs.has_key("FileName"):
+        if "FileName" not in kwargs:
             kwargs["FileName"] = os.path.basename(kwargs["File"])
         
         # Upload Url
@@ -144,13 +145,15 @@ class SmugMug(object):
             oauth_params = self._get_oauth_resource_request_parameters(url, {}, "PUT")
             header["Authorization"] = 'OAuth realm="http://api.smugmug.com/", ' + \
                 ", ".join('%s="%s"' % (k, urlencodeRFC3986(v)) for k, v in sorted(oauth_params.items()))
-        else:
+        elif self.session_id:
             header["X-Smug-SessionID"] = self.session_id
+        else:
+            raise SmugMugException("Authorization required for upload")
         
         # Other headers
         for k, v in kwargs.items():
             if k == "File": continue
-            header["X-Smug-"+k] = v
+            header["X-Smug-" + k] = v
         
         rsp = self._fetch_url(url, data, header, "PUT")
         return self._handle_response(rsp)
@@ -199,11 +202,11 @@ class SmugMug(object):
         try:
             method = parsed["method"]
         except:
-            method = "smugmug.images.upload"
+            parsed["method"] = "smugmug.images.upload"
         
         #TODO: Add better error handling
         if parsed["stat"] == "fail":
-            raise SmugMugException("SmugMug API Error for method " + method + \
+            raise SmugMugException("SmugMug API Error for method " + parsed["method"] + \
                 ": (" + str(parsed["code"]) + ") " + parsed["message"])
         
         return parsed
@@ -254,9 +257,9 @@ class SmugMug(object):
     
     def _fetch_url(self, url, body, header={}, method="POST"):
         header.update({"User-Agent": self.application})
-        data = body.encode('utf8')
+        data = compat_encode(body)
         req = urlrequest.Request(url, data, header)
-        if method == "PUT":
+        if method == "PUT": 
             req.get_method = lambda: "PUT"
         return urlopen(req).read()
     

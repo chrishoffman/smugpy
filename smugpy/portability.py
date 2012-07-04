@@ -19,12 +19,14 @@ except ImportError:
 
 def compat_decode(val):
 	if sys.version_info < (3,):
-		return val.decode('UTF-8')
+		return val.decode('utf-8')
 	else:
 		return val
 
 def compat_encode(val):
     if sys.version_info < (3,) and isinstance(val, unicode):
-        return val.encode("utf-8")
+        return val.encode('utf-8')
+    #elif sys.version_info >= (3,) and isinstance(val, bytes):
+    #    return val.encode('utf-8')
     else:
         return val
