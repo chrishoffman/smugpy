@@ -26,27 +26,27 @@ setup(
         'Programming Language :: Python :: 3.2',
         'Intended Audience :: Developers',
         'Operating System :: OS Independent',
-        'License :: OSI Approved :: BSD License',
+        'License :: OSI Approved :: MIT License',
         'Topic :: Software Development :: Libraries',
         'Topic :: Software Development :: Libraries :: Application Frameworks',
         'Topic :: Software Development :: Libraries :: Python Modules',
     ],
     install_requires = install_requires,
     long_description = dedent("""\
-    Python SmugMug Helper Library
-    ----------------------------
-
-    DESCRIPTION
-    The SmugMug API lets to you access your albums, photos, and videos,
-    and much more.  See http://wiki.smugmug.net/display/API/ for more information.
-
-    USAGE
-    To use the Smugpy library, just 'import smugpy' in the your current py
-    file. As shown in example-anonymous.py, you will need to specify the API_KEY
-    given to you by SmugMug before you can make API requests. See 
-    http://wiki.smugmug.net/display/API/ for more information.
-
-    LICENSE 
-    The SmugMug Python Helper Library is distributed under the MIT License 
+        The SmugMug API lets to you access your albums, photos, and videos,
+        and much more.  See http://wiki.smugmug.net/display/API/ for more information.
+        
+        Example::
+        
+            from smugpy import SmugMug
+            
+            API_KEY = "XXXXXXXXXXXXXXXXXXXXXXXXX"
+            
+            smugmug = SmugMug(api_key=API_KEY, app_name="TestApp")
+            smugmug.login_anonymously()
+            albums = smugmug.albums_get(NickName="williams")
+            
+            for album in albums["Albums"]:
+                print "%s, %s" % (album["id"], album["Title"])
     """)
 )
