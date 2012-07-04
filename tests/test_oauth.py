@@ -18,7 +18,7 @@ class TestOauth(unittest.TestCase):
         self.assertNotEqual(self.smugmug.oauth_secret, None)
         self.smugmug.reset_oauth_token()
 
-    def test_get_request_token(self):
+    def test_get_access_token(self):
         self.smugmug.auth_getAccessToken()
         self.assertNotEqual(self.smugmug.oauth_token, None)
         self.assertNotEqual(self.smugmug.oauth_secret, None)

@@ -14,14 +14,17 @@ class TestLogin(unittest.TestCase):
     def test_login_anonymously(self):
         self.smugmug.login_anonymously()
         self.assertNotEqual(self.smugmug.session_id, None)
+        self.smugmug.reset_auth()
 
     def test_login_withHash(self):
         self.smugmug.login_withHash(UserID='test', PasswordHash='ABCDE')
         self.assertNotEqual(self.smugmug.session_id, None)
+        self.smugmug.reset_auth()
 
     def test_login_withPassword(self):
         self.smugmug.login_withPassword(EmailAddress='test@example.com', Password='ABC123')
         self.assertNotEqual(self.smugmug.session_id, None)
+        self.smugmug.reset_auth()
 
 class TestLogin130(unittest.TestCase):
     def setUp(self):
