@@ -18,15 +18,17 @@ except ImportError:
     from django.utils import simplejson as json
 
 def compat_decode(val):
-	if sys.version_info < (3,):
-		return val.decode('utf-8')
-	else:
-		return val
+    if sys.version_info < (3,) and isinstance(val, unicode):
+        return val.decode('utf-8')
+    elif sys.version_info >= (3,) and isinstance(val, bytes):
+        return val.decode('utf-8')
+    else:
+        return val
 
 def compat_encode(val):
     if sys.version_info < (3,) and isinstance(val, unicode):
         return val.encode('utf-8')
-    #elif sys.version_info >= (3,) and isinstance(val, bytes):
-    #    return val.encode('utf-8')
+    elif sys.version_info >= (3,) and isinstance(val, str):
+        return val.encode('utf-8')
     else:
         return val

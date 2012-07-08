@@ -15,7 +15,7 @@ __version__ = "0.3.0"
 
 class SmugMug(object):
     def __init__(self, api_key=None, oauth_secret=None, api_version="1.3.0", secure=False,
-                 session_id=None, oauth_token=None, oauth_token_secret=None, app_name="Unknown App"):
+        session_id=None, oauth_token=None, oauth_token_secret=None, app_name="Unknown App"):
         """Initializes a session."""
         self.api_key = api_key
         self.oauth_secret = oauth_secret
@@ -204,7 +204,6 @@ class SmugMug(object):
         except:
             parsed["method"] = "smugmug.images.upload"
         
-        #TODO: Add better error handling
         if parsed["stat"] == "fail":
             raise SmugMugException("SmugMug API Error for method " + parsed["method"] + \
                 ": (" + str(parsed["code"]) + ") " + parsed["message"])
@@ -218,21 +217,23 @@ class SmugMug(object):
             urlencode(dict(oauth_token=self.oauth_token)) + \
             "&Access=" + access + "&Permissions=" + perm
 
-    def _get_oauth_resource_request_parameters(self, url, parameters={}, method="GET"):
+    def _get_oauth_resource_request_parameters(self, url, parameters={}, method="GET",
+        timestamp=int(time.time()), nonce=binascii.b2a_hex(uuid.uuid4().bytes)):
         """Returns the OAuth parameters as a dict for the given resource request."""
         base_args = dict(
             oauth_consumer_key=self.api_key,
             oauth_signature_method="HMAC-SHA1",
-            oauth_timestamp=str(int(time.time())),
-            oauth_nonce=binascii.b2a_hex(uuid.uuid4().bytes),
+            oauth_timestamp=str(timestamp),
+            oauth_nonce=str(nonce),
             oauth_version="1.0",
         )
-        if self.oauth_token: base_args["oauth_token"]=self.oauth_token
+        if self.oauth_token: 
+            base_args["oauth_token"]=self.oauth_token
         args = {}
         args.update(base_args)
         args.update(parameters)
         signature = self._oauth_signature(method, url, args)
-        base_args["oauth_signature"] = signature
+        base_args["oauth_signature"] = compat_decode(signature)
         return base_args
 
     def _oauth_signature(self, method, url, parameters={}):
@@ -249,8 +250,11 @@ class SmugMug(object):
         base_string =  "&".join(urlencodeRFC3986(e) for e in base_elems)
         
         key_elems = [self.oauth_secret]
-        key_elems.append(self.oauth_token_secret if self.oauth_token_secret else "")
-        key = "&".join(key_elems)
+        if self.oauth_token_secret:
+            key_elems.append(self.oauth_token_secret)
+        else:
+            key_elems.append("")
+        key = "&" . join(key_elems)
         
         hash = hmac.new(key.encode("utf-8"), base_string.encode("utf-8"), hashlib.sha1)
         return binascii.b2a_base64(hash.digest())[:-1]
