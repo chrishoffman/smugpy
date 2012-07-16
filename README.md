@@ -6,32 +6,17 @@ Smugpy is an Python 2.x/3.x library for the [SmugMug](https://secure.smugmug.com
 Installation
 ------------
 
-The latest *stable version* of smugpy can always be installed via [pip](http://www.pip-installer.org/en/latest/index.html):
+The latest **stable version** of smugpy can always be installed via [pip](http://www.pip-installer.org/en/latest/index.html):
     
     pip install -U smugpy
 
-Or, you can install the *development version* directly from GitHub:
+Or, you can install the **development version** directly from GitHub:
 
     pip install -U https://github.com/chrishoffman/smugpy/tarball/master
 
 Usage
 -----
-Anonymous request:
-
-```python
-from smugpy import SmugMug
-
-API_KEY = "XXXXXXXXXXXXXXXXXXXXXXXXX"
-
-smugmug = SmugMug(api_key=API_KEY, app_name="TestApp")
-smugmug.login_anonymously()
-albums = smugmug.albums_get(NickName="williams")
-
-for album in albums["Albums"]:
-    print "%s, %s" % (album["id"], album["Title"])
-```
-
-Anonymous request (1.3.0+):
+Simple request (1.3.0+):
 
 ```python
 from smugpy import SmugMug
@@ -44,29 +29,11 @@ albums = smugmug.albums_get(NickName="williams")
 for album in albums["Albums"]:
     print "%s, %s" % (album["id"], album["Title"])
 ```
-
-Oauth request:
-
-```python
-from smugpy import SmugMug
-
-API_KEY = "XXXXXXXXXXXXXXXXXXXXXXXXX"
-OAUTH_SECRET = "YYYYYYYYYYYYYYYYYYYYYYY"
-
-smugmug = SmugMug(api_key=API_KEY, oauth_secret=OAUTH_SECRET, app_name="TestApp")
-
-smugmug.auth_getRequestToken()
-raw_input("Authorize app at %s\n\nPress Enter when complete.\n" % (smugmug.authorize()))   
-smugmug.auth_getAccessToken()
-
-albums = smugmug.albums_get(NickName="williams")
-for album in albums["Albums"]:
-    print "%s, %s" % (album["id"], album["Title"])
-```
+For more examples, see the [examples](https://github.com/chrishoffman/smugpy/examples) directory.
 
 Helping Out
 -----------
-If you notice any problems, please report them to the GitHub issue tracker at [http://github.com/chrishoffman/smugpy/issues](http://github.com/chrishoffman/smugpy/issues). 
+If you notice any problems, please report them to the GitHub issue tracker at [https://github.com/chrishoffman/smugpy/issues](http://github.com/chrishoffman/smugpy/issues). 
 
 License
 -------
