@@ -29,7 +29,7 @@ albums = smugmug.albums_get(NickName="williams")
 for album in albums["Albums"]:
     print "%s, %s" % (album["id"], album["Title"])
 ```
-For more examples, see the [examples](https://github.com/chrishoffman/smugpy/examples) directory.
+For more examples, see the [examples](https://github.com/chrishoffman/smugpy/tree/master/examples) directory.
 
 Helping Out
 -----------
