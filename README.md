@@ -1,13 +1,18 @@
 Smugpy [![Build Status](https://secure.travis-ci.org/chrishoffman/smugpy.png?branch=master)](http://travis-ci.org/chrishoffman/smugpy)
 ======
 
-Smugpy is an Python library for the [SmugMug](https://secure.smugmug.com/signup.mg?Coupon=2TqKwSOXw5HeU) API created by Chris Hoffman.  Smugpy supports all versions of the API and Oauth 1.0 for API versions 1.2.2+.  This library also works in [Google App Engine](http://code.google.com/appengine/).  For more information on the SmugMug API, see [SmugMug API Documentation](http://wiki.smugmug.net/display/API/).
+Smugpy is an Python 2.x/3.x library for the [SmugMug](https://secure.smugmug.com/signup.mg?Coupon=2TqKwSOXw5HeU) API created by Chris Hoffman.  Smugpy supports all versions of the API and Oauth 1.0 for API versions 1.2.2+.  This library also works in [Google App Engine](http://code.google.com/appengine/).  For more information on the SmugMug API, see [SmugMug API Documentation](http://wiki.smugmug.net/display/API/).
 
 Installation
 ------------
-Installing the python client is a very simple process. Once you've downloaded the source bundle for the client, execute the following:
 
-    python setup.py install
+The latest *stable version* of smugpy can always be installed via [pip](http://www.pip-installer.org/en/latest/index.html):
+    
+    pip install -U smugpy
+
+Or, you can install the *development version* directly from GitHub:
+
+    pip install -U https://github.com/chrishoffman/smugpy/tarball/master
 
 Usage
 -----
