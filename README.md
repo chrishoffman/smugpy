@@ -14,6 +14,10 @@ Or, you can install the **development version** directly from GitHub:
 
     pip install -U https://github.com/chrishoffman/smugpy/tarball/master
 
+Or, download the package and install manually:
+
+    python setup.py install
+
 Usage
 -----
 Simple request (1.3.0+):
