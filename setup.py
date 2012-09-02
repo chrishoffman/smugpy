@@ -8,7 +8,7 @@ if sys.version_info < (2, 6):
 
 setup(
     name = "smugpy",
-    version = "0.3.0",
+    version = "0.3.1",
     description = "SmugMug Python API",
     author = "Chris Hoffman",
     author_email = "chris@chrishoffman.org",

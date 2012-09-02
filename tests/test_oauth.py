@@ -32,5 +32,5 @@ class TestOauth(unittest.TestCase):
         )
         timestamp = 1341423551
         nonce = 'b7cdabcabc3c4f7f91508da3bca9798f'
-        signed_args = self.smugmug._get_oauth_resource_request_parameters(url=url, parameters=parameters, method='POST', timestamp=timestamp, nonce=nonce)
+        signed_args = self.smugmug._get_oauth_request_params(url=url, parameters=parameters, method='POST', timestamp=timestamp, nonce=nonce)
         self.assertEqual(signed_args['oauth_signature'], 'f++GOXf9BhSVhGy1dxGSbmaA0ng=')
