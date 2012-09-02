@@ -218,8 +218,13 @@ class SmugMug(object):
             "&Access=" + access + "&Permissions=" + perm
 
     def _get_oauth_resource_request_parameters(self, url, parameters={}, method="GET",
-        timestamp=int(time.time()), nonce=binascii.b2a_hex(uuid.uuid4().bytes)):
+                                               timestamp=None, nonce=None):
         """Returns the OAuth parameters as a dict for the given resource request."""
+        if timestamp == None:
+            timestamp = int(time.time())
+        if nonce == None:
+            nonce = binascii.b2a_hex(uuid.uuid4().bytes)
+
         base_args = dict(
             oauth_consumer_key=self.api_key,
             oauth_signature_method="HMAC-SHA1",
