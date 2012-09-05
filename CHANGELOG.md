@@ -1,3 +1,8 @@
+0.3.1
+---
+* Fixing bug with oauth nonce and timestamp. Fix for [issue #5](https://github.com/chrishoffman/smugpy/issues/5).
+* PEP8 recommendations
+
 0.3.0
 ---
 * Support for Python 3.0+
