@@ -165,7 +165,7 @@ class SmugMug(object):
         return self._handle_response(rsp)
 
     def _make_handler(self, method):
-        """API method contructor"""
+        """API method constructor"""
         secure = False
         if (method.startswith("login_with") or
             (method.startswith("auth") and self.check_version(min="1.3.0")) or
