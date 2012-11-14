@@ -17,12 +17,12 @@ def dummy_urlopen(req):
 
     data = makehash()
     data['stat'] = 'ok'
-    data['method'] = 'method'
 
     if 'upload.smugmug.com' in url:
         data['Image']['id'] = 321
-        del data['method']
     else:
+        data['method'] = 'method'
+
         if sys.version_info >= (3,):
             params = params.decode('utf-8')
 
