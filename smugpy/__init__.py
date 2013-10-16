@@ -84,7 +84,7 @@ class SmugMug(object):
         # authentication methods and no session is required for anonymous
         # access
         if not self.check_version(max="1.2.2"):
-            raise SmugMugException("Not a supported method")
+            raise SmugMugException("Login method ("+handler+") not supported past API version 1.2.2.")
 
         kwargs.update(dict(APIKey=self.api_key))
         login = self._make_handler(handler)
@@ -93,16 +93,19 @@ class SmugMug(object):
         return rsp
 
     def login_anonymously(self, **kwargs):
+        """Login methods are invoked over https."""
         return self._login("login_anonymously", **kwargs)
 
     def login_withHash(self, **kwargs):
+        """Login methods are invoked over https."""
         return self._login("login_withHash", **kwargs)
 
     def login_withPassword(self, **kwargs):
+        """Login methods are invoked over https."""
         return self._login("login_withPassword", **kwargs)
 
     def auth_getRequestToken(self, **kwargs):
-        """Obtain an Oauth request token"""
+        """Obtain an Oauth request token.  Auth methods are invoked over https."""
         auth = self._make_handler("auth_getRequestToken")
         rsp = auth(**kwargs)
         self.set_oauth_token(rsp["Auth"]["Token"]["id"],
@@ -110,7 +113,7 @@ class SmugMug(object):
         return rsp
 
     def auth_getAccessToken(self, **kwargs):
-        """Obtain an Oauth access token"""
+        """Obtain an Oauth access token.  Auth methods are invoked over https."""
         auth = self._make_handler("auth_getAccessToken")
         rsp = auth(**kwargs)
         self.set_oauth_token(rsp["Auth"]["Token"]["id"],
@@ -166,11 +169,10 @@ class SmugMug(object):
 
     def _make_handler(self, method):
         """API method constructor"""
-        secure = False
-        if (method.startswith("login_with") or
-            (method.startswith("auth") and self.check_version(min="1.3.0")) or
-                self.secure):
-            secure = True
+
+        secure = (method.startswith("login_with") or
+                  (method.startswith("auth") and self.check_version(min="1.3.0")) or
+                  self.secure)
 
         method = "smugmug." + method.replace("_", ".")
 
@@ -208,7 +210,7 @@ class SmugMug(object):
         if "method" not in parsed:
             parsed["method"] = "smugmug.images.upload"
 
-        if parsed["stat"] == "fail":
+        if not parsed["stat"] == "ok":
             raise SmugMugException("SmugMug API Error for method " +
                                    parsed["method"] +
                                    ": (" + str(parsed["code"]) + ") " +
@@ -217,6 +219,8 @@ class SmugMug(object):
         return parsed
 
     #Oauth methods
+    # access modes: "Public" [default], "Full"
+    # perm modes: "Read" [default], "Add", or "Modify"
     def authorize(self, access="Public", perm="Read"):
         """Returns the SmugMug authorization URL for the given request token"""
         return "http://api.smugmug.com/services/oauth/authorize.mg?" + \
@@ -277,7 +281,15 @@ class SmugMug(object):
         req = urlrequest.Request(url, data, header)
         if method == "PUT":
             req.get_method = lambda: "PUT"
+
         return urlopen(req).read()
+
+    def fetch_image(self, url, header={}):
+        """Return open file-like handle (from urllib.urlopen) to given image"""
+        header.update({"User-Agent": self.application})
+        req = urlrequest.Request(url, None, header)
+        req.get_method = lambda: "GET"
+        return urlopen(req)
 
     def check_version(self, min=None, max=None):
         """Checks API version
