@@ -284,13 +284,6 @@ class SmugMug(object):
 
         return urlopen(req).read()
 
-    def fetch_image(self, url, header={}):
-        """Return open file-like handle (from urllib.urlopen) to given image"""
-        header.update({"User-Agent": self.application})
-        req = urlrequest.Request(url, None, header)
-        req.get_method = lambda: "GET"
-        return urlopen(req)
-
     def check_version(self, min=None, max=None):
         """Checks API version
 
