@@ -53,7 +53,7 @@ def smugmugOauthGetAccessToken(requestToken):
                       app_name=APP_NAME)
  
     # The request token is good for 1 operation: to get an access token.
-    response = smugmug.auth_getRequestToken()
+    response = smugmug.auth_getAccessToken()
 
     # The access token should be good until the user explicitly
     # disables it at smugmug.com in their settings panel.
@@ -66,7 +66,7 @@ def smugmugOauthGetAccessToken(requestToken):
 def smugmugOauthUseAccessToken(accessToken):
     # Use the access token to log in
     smugmug = SmugMug(api_key=API_KEY, oauth_secret=OAUTH_SECRET,
-                      oauth_token=accessToke['Token']['id'],
+                      oauth_token=accessToken['Token']['id'],
                       oauth_token_secret=accessToken['Token']['Secret'],
                       app_name=APP_NAME)
     return smugmug;
